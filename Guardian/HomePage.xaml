@@ -1,0 +1,169 @@
+﻿<phone:PhoneApplicationPage
+    x:Class="Guardian.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Guardian"
+    mc:Ignorable="d"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait"  Orientation="Portrait"
+    shell:SystemTray.IsVisible="True">
+
+    <phone:PhoneApplicationPage.Resources>
+        <DataTemplate x:Key="Book">
+            <Button Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Content="&#x1f4d5;" FontFamily="Segoe UI Symbol" Width="90" Height="90" FontSize="30" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Movie">
+            <Button Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Content="&#x1f4f9;" FontFamily="Segoe UI Symbol" Width="90" Height="90" FontSize="30" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Game">
+            <Button Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Content="&#x265E;" FontFamily="Segoe UI Symbol" Width="90" Height="90" FontSize="30" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="Other">
+            <Button Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Content="&#xe138;" FontFamily="Segoe UI Symbol" Width="90" Height="90" FontSize="30" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="TemplateSelector">
+            <local:TemplateSelector
+                BookTemplate="{StaticResource Book}"
+                MovieTemplate="{StaticResource Movie}"
+                GameTemplate="{StaticResource Game}"
+                OtherTemplate="{StaticResource Other}"
+            />
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <!--Pivot Control-->
+        <TextBlock x:Name="LoggedAs" HorizontalAlignment="Right" Margin="0, 0, 15, 0" />
+        <phone:Pivot x:Name="PivotControl" Title="{Binding Path=Resources.ApplicationTitle, Source={StaticResource Strings}}" LoadedPivotItem="PivotItem_Loaded">       
+            
+            
+            <phone:PivotItem Header="{Binding Path=Resources.ItemsListView, Source={StaticResource Strings}}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                    <TextBlock x:Name="NoItems" Text="{Binding Path=Resources.ItemsList_NoItems, Source={StaticResource Strings}}" />
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        
+                        <StackPanel x:Name="RadioButtons" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                            <TextBlock Text="{Binding Path=Resources.ItemsList_Items, Source={StaticResource Strings}}" VerticalAlignment="Center" />
+                            <RadioButton x:Name="AllItems" Content="{Binding Path=Resources.ItemsList_AllItems, Source={StaticResource Strings}}" IsChecked="true" Checked="AllItems_Checked" />
+                            <RadioButton x:Name="MyItems" Content="{Binding Path=Resources.ItemsList_MyItems, Source={StaticResource Strings}}" Checked="MyItems_Checked" />
+                            <RadioButton x:Name="RentedItems" Content="{Binding Path=Resources.ItemsList_RentedItems, Source={StaticResource Strings}}" Checked="RentedItems_Checked" />
+                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="1" IsEnabled="True" HorizontalScrollBarVisibility="Auto">
+                        <ListBox x:Name="ItemsList" ItemsSource="{Binding}" Tap="ItemsList_Tap" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalAlignment="Top" Height="450">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" MinWidth="180" />
+                                            <ColumnDefinition Width="*" MinWidth="180" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="1" />
+                                        </Grid.RowDefinitions>
+
+                                        
+                                        <local:TemplateSelector Content="{Binding}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                            BookTemplate="{StaticResource Book}"
+                                            MovieTemplate="{StaticResource Movie}"
+                                            GameTemplate="{StaticResource Game}"
+                                            OtherTemplate="{StaticResource Other}"
+                                        />
+                                        
+                                        <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Name="Name" Text="{Binding Name}" FontSize="{StaticResource PhoneFontSizeExtraLarge}" HorizontalAlignment="Stretch" />
+
+                                        <TextBlock Grid.Column="1" Grid.Row="1" Name="Category" Text="{Binding CategoryName}" FontSize="{StaticResource PhoneFontSizeMedium}" />
+                                        <TextBlock Grid.Column="2" Grid.Row="1" Name="Status" Text="{Binding StatusName}" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+
+                                        <Rectangle Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Fill="White" Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                    </Grid>
+                </StackPanel>
+            </phone:PivotItem>
+
+            <phone:PivotItem x:Name="NewItem" Header="{Binding Path=Resources.NewItemView, Source={StaticResource Strings}}">
+                <ScrollViewer>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Path=Resources.ItemDetails_Name, Source={StaticResource Strings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
+                        <TextBox x:Name="NewItemName" Text="{Binding Name,Mode=TwoWay}" MaxLength="50" Margin="12,0,0,15" />
+
+                        <TextBlock Text="{Binding Path=Resources.ItemDetails_Category, Source={StaticResource Strings}}" Style="{StaticResource PhoneTextNormalStyle}" Margin="0,0,0,0"/>
+                        <ListBox x:Name="NewItemCategory" FontSize="30" SelectedItem="{Binding Category,Mode=TwoWay}" ItemsSource="{Binding Path=Guardian.Model.Category}" />
+
+                        <Button x:Name="SaveItem" Content="{Binding Path=Resources.NewItem_SaveItem, Source={StaticResource Strings}}" Margin="0,15,0,0" Click="SaveItem_Click" />
+                        <Button x:Name="SaveTag" Content="{Binding Path=Resources.NewItem_SaveTag, Source={StaticResource Strings}}" Margin="0,15,0,0" Click="SaveTag_Click" />
+                        <Button x:Name="GenerateQR" Content="{Binding Path=Resources.NewItem_GenerateQR, Source={StaticResource Strings}}" Margin="0,5,0,0" Click="GenerateQR_Click" />
+                    </StackPanel>
+                </ScrollViewer>
+            </phone:PivotItem>
+        </phone:Pivot>
+    </Grid>
+
+</phone:PhoneApplicationPage>
+
+<!--<ListBoxItem>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width='*' />
+                                        <ColumnDefinition Width='*' />
+                                        <ColumnDefinition Width='*' />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="1" />
+                                    </Grid.RowDefinitions>
+
+                                    <ContentControl Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Template="{StaticResource SelectorTemplate}"  />
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Name="Name" Text="Osadnicy z Katanu" FontSize="{StaticResource PhoneFontSizeExtraLarge}" />
+
+                                    <TextBlock Grid.Column="1" Grid.Row="1" Name="Category" Text="Book" FontSize="{StaticResource PhoneFontSizeMedium}" />
+                                    <TextBlock Grid.Column="2" Grid.Row="1" Name="Status" Text="Status: In use" FontSize="{StaticResource PhoneFontSizeMedium}"/>
+
+                                    <Rectangle Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Fill="White" Height="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />    
+                                </Grid>
+                                -->
+<!--<StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal">
+                                        
+                                        
+                                            
+                                    </StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />    
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        
+                                    </Grid>
+                                    
+                                </StackPanel>-->
+
+
+<!--</ListBoxItem>-->
